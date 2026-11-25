@@ -34,7 +34,9 @@ labels its controls; the score itself is primarily a visual artifact.
   provided. Hit regions expose coordinates and indexes, but a blind user cannot
   currently read the music as text.
 - No high-contrast or light theme switch.
-- No reduced-motion preference handling for the spinner and smooth page scroll.
+- No score-to-speech or linear text representation.
+- Reduced-motion is honoured for CSS animation/transition/scroll; the SVG itself
+  has no animation.
 - Keyboard operation of the SVG score itself (tabbing between noteheads) is not
   implemented; use the measure list and inspector instead.
 - No screen-reader announcement of score changes beyond the status text.
