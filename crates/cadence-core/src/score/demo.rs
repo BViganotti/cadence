@@ -73,7 +73,7 @@ pub fn demo_score() -> Score {
     };
 
     let mut key = Key::new(1, KeyMode::Major);
-    let mut melody_attributes = Attributes {
+    let melody_attributes = Attributes {
         divisions: 480,
         key,
         time: TimeSignature {
