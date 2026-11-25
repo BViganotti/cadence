@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Cadence — Engraving Workbench</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/app.css">
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">♪</span>
+        <span class="brand-name">Cadence</span>
+        <span class="brand-tag">engraving workbench</span>
+      </div>
+      <div class="toolbar" role="toolbar" aria-label="Score actions">
+        <button id="importBtn" class="button primary" title="Import a MusicXML file">Import MusicXML</button>
+        <input id="fileInput" type="file" accept=".musicxml,.xml,text/xml,application/xml" hidden>
+        <button id="undoBtn" class="button" title="Undo the last edit">Undo</button>
+        <button id="resetBtn" class="button" title="Load the built-in demo score">Demo</button>
+        <span class="divider" aria-hidden="true"></span>
+        <button class="button" data-export="svg" title="Download SVG">SVG</button>
+        <button class="button" data-export="pdf" title="Download PDF">PDF</button>
+        <button class="button" data-export="midi" title="Download MIDI">MIDI</button>
+        <button class="button" data-export="musicxml" title="Download MusicXML">MusicXML</button>
+      </div>
+      <div class="connection" title="Live updates">
+        <span id="statusDot" class="dot" aria-hidden="true"></span>
+        <span id="connectionLabel">connecting</span>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <aside class="panel sidebar" aria-label="Parts, measures and note entry">
+        <section class="block">
+          <div class="block-title"><h2>Parts</h2><span id="partCount" class="count">0</span></div>
+          <div id="parts" class="part-list"></div>
+        </section>
+
+        <section class="block">
+          <div class="block-title"><h2>Measures</h2><span id="measureCount" class="count">0</span></div>
+          <div id="measures" class="chip-grid measures" role="listbox" aria-label="Measures"></div>
+        </section>
+
+        <section class="block">
+          <div class="block-title"><h2>Note entry</h2><span class="hint">click a measure</span></div>
+          <div id="durations" class="chip-grid" role="group" aria-label="Duration"></div>
+          <div class="field-row">
+            <label class="field compact">Dots
+              <select id="dots">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+              </select>
+            </label>
+            <label class="field compact">Voice
+              <select id="voice">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+              </select>
+            </label>
+          </div>
+          <label class="field compact">Octave
+            <select id="octave"></select>
+          </label>
+          <div id="pitchPad" class="pitch-pad" role="group" aria-label="Pitch"></div>
+          <div class="note-actions">
+            <button id="addRest" class="button wide">Add rest</button>
+          </div>
+        </section>
+      </aside>
+
+      <section class="score-area" aria-label="Score preview">
+        <div class="score-heading">
+          <div>
+            <h1 id="scoreTitle">Loading score…</h1>
+            <p id="scoreMeta" class="muted">Preparing the engraver</p>
+          </div>
+          <div class="score-actions">
+            <span id="pageBadge" class="badge">— pages</span>
+            <span id="diagnosticBadge" class="badge ok">no diagnostics</span>
+          </div>
+        </div>
+        <div id="scoreStage" class="stage" tabindex="0" aria-label="Engraved score. Click a note or rest to edit it.">
+          <div class="empty-state">
+            <span class="spinner" aria-hidden="true"></span>
+            <p>Engraving…</p>
+          </div>
+        </div>
+        <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+        <div class="stage-foot">
+          <span>Click a note to edit it. Everything stays on this machine.</span>
+          <span id="eventHint" class="muted">no selection</span>
+        </div>
+      </section>
+
+      <aside class="panel inspector" aria-label="Selection and measure tools">
+        <section class="block">
+          <div class="block-title"><h2>Selection</h2><span id="selectionBadge" class="badge">none</span></div>
+          <div id="selectionInfo" class="selection-info">Click a notehead or rest in the score.</div>
+          <div class="field-grid">
+            <label class="field">Pitch
+              <input id="inspPitch" type="text" placeholder="C4" autocomplete="off" spellcheck="false">
+            </label>
+            <button id="applyPitch" class="button">Set pitch</button>
+            <label class="field">Duration
+              <select id="inspDuration"></select>
+            </label>
+            <label class="field compact">Dots
+              <select id="inspDots">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+              </select>
+            </label>
+            <button id="applyDuration" class="button">Set duration</button>
+            <label class="field">Dynamic
+              <select id="inspDynamic"></select>
+            </label>
+            <button id="applyDynamic" class="button">Set dynamic</button>
+            <label class="field">Lyric
+              <input id="inspLyric" type="text" maxlength="512" placeholder="syllable" autocomplete="off">
+            </label>
+            <button id="applyLyric" class="button">Set lyric</button>
+            <button id="addChord" class="button">Add chord note</button>
+            <button id="deleteEvent" class="button danger">Delete event</button>
+          </div>
+        </section>
+
+        <section class="block">
+          <div class="block-title"><h2>Measure &amp; part</h2><span id="measureBadge" class="badge">m1</span></div>
+          <div class="field-grid">
+            <label class="field">Tempo (BPM)
+              <input id="tempoInput" type="number" min="10" max="400" step="1" value="96">
+            </label>
+            <button id="applyTempo" class="button">Set tempo</button>
+            <label class="field">Key
+              <select id="keySelect"></select>
+            </label>
+            <button id="applyKey" class="button">Set key</button>
+            <label class="field">Transpose part
+              <select id="transposeSelect">
+                <option value="-12">down 12</option>
+                <option value="-7">down 7</option>
+                <option value="-5">down 5</option>
+                <option value="-2">down 2</option>
+                <option value="2">up 2</option>
+                <option value="5">up 5</option>
+                <option value="7">up 7</option>
+                <option value="12">up 12</option>
+              </select>
+            </label>
+            <button id="applyTranspose" class="button">Transpose</button>
+            <button id="addMeasure" class="button">Add measure</button>
+            <button id="deleteMeasure" class="button danger">Delete measure</button>
+          </div>
+        </section>
+
+        <section class="block diagnostics-block">
+          <div class="block-title"><h2>Diagnostics</h2><span id="diagnosticCount" class="count">0</span></div>
+          <div id="diagnostics" class="diagnostics"></div>
+        </section>
+      </aside>
+    </main>
+
+    <footer class="statusbar">
+      <span id="footerStatus">ready</span>
+      <span class="loopback">127.0.0.1 · local session</span>
+    </footer>
+  </div>
+  <script src="/assets/app.js"></script>
+</body>
+</html>

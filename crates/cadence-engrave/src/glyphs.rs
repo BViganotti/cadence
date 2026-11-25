@@ -1,7 +1,6 @@
 //! Original vector glyphs for clefs, accidentals, rests, flags and marks.
 
 use crate::geom::{Align, Element, PathSeg, Point};
-use crate::text;
 use cadence_core::{Accidental, Articulation, Clef, ClefSign, Key, NoteValue, TimeSignature, TimeSymbol};
 
 pub fn accidental(accidental: Accidental, x: f64, y: f64, s: f64) -> Vec<Element> {
@@ -191,15 +190,15 @@ pub fn time_signature(time: TimeSignature, x: f64, top: f64, s: f64) -> Vec<Elem
     let size = 1.95 * s;
     match time.symbol {
         TimeSymbol::Common => {
-            out.push(Element::text(x + 1.2 * s, top + 0.55 * s, size * 1.3, "C", Align::Center));
+            out.push(common_time_c(x, top, s));
         }
         TimeSymbol::Cut => {
-            out.push(Element::text(x + 1.2 * s, top + 0.55 * s, size * 1.3, "C", Align::Center));
+            out.push(common_time_c(x, top, s));
             out.push(Element::line(
-                x + 0.55 * s,
-                top + 0.4 * s,
-                x + 0.55 * s,
-                top + 3.6 * s,
+                x + 1.15 * s,
+                top + 0.55 * s,
+                x + 1.15 * s,
+                top + 3.45 * s,
                 0.16 * s,
             ));
         }
@@ -225,6 +224,30 @@ pub fn time_signature(time: TimeSignature, x: f64, top: f64, s: f64) -> Vec<Elem
 
 pub fn time_signature_width(_time: TimeSignature, s: f64) -> f64 {
     2.4 * s
+}
+
+fn common_time_c(x: f64, top: f64, s: f64) -> Element {
+    let cx = x + 1.2 * s;
+    let cy = top + 2.0 * s;
+    let rx = 0.95 * s;
+    let ry = 1.45 * s;
+    Element::Path {
+        segments: vec![
+            PathSeg::Move(Point::new(cx + 0.5 * rx, cy - 0.866 * ry)),
+            PathSeg::Cubic {
+                c1: Point::new(cx - 0.7 * rx, cy - 1.1 * ry),
+                c2: Point::new(cx - rx, cy - 0.6 * ry),
+                to: Point::new(cx - rx, cy),
+            },
+            PathSeg::Cubic {
+                c1: Point::new(cx - rx, cy + 0.6 * ry),
+                c2: Point::new(cx - 0.7 * rx, cy + 1.1 * ry),
+                to: Point::new(cx + 0.5 * rx, cy + 0.866 * ry),
+            },
+        ],
+        stroke: 0.3 * s,
+        fill: false,
+    }
 }
 
 /// Draw the key signature; returns the used width.
@@ -512,5 +535,5 @@ pub fn dynamic_text(dynamic: cadence_core::Dynamic) -> &'static str {
 }
 
 pub fn lyrics_text(text_value: &str, size: f64) -> f64 {
-    text::width(text_value, size)
+    crate::text::width(text_value, size)
 }

@@ -389,35 +389,46 @@ impl ValidationReport {
 
 fn inspect_ties_and_slurs(part_index: usize, part: &Part) -> Vec<Issue> {
     let mut issues = Vec::new();
+    // Ties are tracked per voice across measure boundaries.
+    let mut open: std::collections::BTreeMap<u8, Vec<(Pitch, usize)>> =
+        std::collections::BTreeMap::new();
     for measure in &part.measures {
         for voice in &measure.voices {
-            let mut previous: Option<(Pitch, bool)> = None;
             for event in &voice.events {
                 for note in event.notes() {
+                    let ties = open.entry(voice.number).or_default();
                     if note.tie.stop {
-                        match previous {
-                            Some((pitch, true)) if pitch == note.pitch => {}
-                            _ => issues.push(Issue::warning(format!(
+                        if let Some(index) = ties
+                            .iter()
+                            .rposition(|(pitch, _)| *pitch == note.pitch)
+                        {
+                            ties.remove(index);
+                        } else {
+                            issues.push(Issue::warning(format!(
                                 "part {} measure {} voice {} tie stop without matching start on {}",
                                 part_index + 1,
                                 measure.number,
                                 voice.number,
                                 note.pitch
-                            ))),
+                            )));
                         }
                     }
-                    previous = Some((note.pitch, note.tie.start));
+                    if note.tie.start {
+                        ties.push((note.pitch, measure.number));
+                    }
                 }
             }
-            if let Some((pitch, true)) = previous {
-                issues.push(Issue::warning(format!(
-                    "part {} measure {} voice {} tie start on {} has no continuation",
-                    part_index + 1,
-                    measure.number,
-                    voice.number,
-                    pitch
-                )));
-            }
+        }
+    }
+    for (voice, ties) in open {
+        for (pitch, measure_number) in ties {
+            issues.push(Issue::warning(format!(
+                "part {} measure {} voice {} tie start on {} has no continuation",
+                part_index + 1,
+                measure_number,
+                voice,
+                pitch
+            )));
         }
     }
     // Slur balance per part, scanning all voices in order.
