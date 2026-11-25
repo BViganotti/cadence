@@ -300,3 +300,12 @@ fn redo_restores_undone_edits_and_is_cleared_by_new_edits() {
     assert_eq!(document.score.metadata.title, "Third");
     assert!(document.summary().stringify().contains("\"canRedo\""));
 }
+
+#[test]
+fn summary_reports_chord_and_rest_counts() {
+    let document = Document::demo();
+    let summary = document.summary();
+    assert!(summary.get("chordCount").and_then(|v| v.as_u64()).unwrap() >= 1);
+    assert!(summary.get("restCount").and_then(|v| v.as_u64()).unwrap() >= 1);
+    assert!(summary.get("eventCount").and_then(|v| v.as_u64()).unwrap() >= summary.get("noteCount").and_then(|v| v.as_u64()).unwrap());
+}

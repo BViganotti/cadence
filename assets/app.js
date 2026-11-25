@@ -352,10 +352,12 @@
     if (summary.metadata.composer) meta.push(summary.metadata.composer);
     meta.push(`${summary.measureCount} measures`);
     meta.push(`${summary.noteCount} notes`);
+    meta.push(`${summary.chordCount} chords`);
+    meta.push(`${summary.restCount} rests`);
     meta.push(summary.source);
     $("#scoreMeta").textContent = meta.join(" · ");
     $("#footerStatus").textContent =
-      `v${summary.version} · ${summary.parts.length} part(s) · ${summary.noteCount} notes · ` +
+      `v${summary.version} · ${summary.parts.length} part(s) · ${summary.eventCount} events · ` +
       `${summary.diagnostics.errors} error(s), ${summary.diagnostics.warnings} warning(s)`;
     $("#undoBtn").disabled = !summary.canUndo;
     $("#redoBtn").disabled = !summary.canRedo;

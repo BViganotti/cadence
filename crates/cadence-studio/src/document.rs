@@ -581,6 +581,22 @@ impl Document {
                 ])
             })
             .collect();
+        let mut chord_count = 0usize;
+        let mut rest_count = 0usize;
+        for part in &self.score.parts {
+            for measure in &part.measures {
+                for voice in &measure.voices {
+                    for event in &voice.events {
+                        if event.is_chord() {
+                            chord_count += 1;
+                        }
+                        if event.is_rest() {
+                            rest_count += 1;
+                        }
+                    }
+                }
+            }
+        }
         json::object(vec![
             ("version", json::count_u64(self.version)),
             ("source", json::string(self.source.clone())),
@@ -600,6 +616,8 @@ impl Document {
             ("measureCount", json::count(self.score.measure_count())),
             ("noteCount", json::count(self.score.note_count())),
             ("eventCount", json::count(self.score.event_count())),
+            ("chordCount", json::count(chord_count)),
+            ("restCount", json::count(rest_count)),
             (
                 "diagnostics",
                 json::object(vec![
