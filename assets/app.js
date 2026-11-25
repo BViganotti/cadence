@@ -624,6 +624,7 @@
         measure: state.selectedMeasure,
         voice: state.selectedVoice,
         event: state.selectedEvent,
+        note: state.selectedNote,
         text: $("#inspLyric").value,
         syllabic: "single",
       });

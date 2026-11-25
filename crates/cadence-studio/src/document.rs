@@ -345,6 +345,7 @@ impl Document {
                 measure,
                 voice,
                 event,
+                note,
                 text,
                 syllabic,
             } => {
@@ -359,8 +360,8 @@ impl Document {
                     .ok_or_else(|| Error::out_of_range("event index"))?;
                 let note = event
                     .notes_mut()
-                    .first_mut()
-                    .ok_or_else(|| Error::msg("cannot attach a lyric to a rest"))?;
+                    .get_mut(*note)
+                    .ok_or_else(|| Error::out_of_range("note index"))?;
                 note.lyrics.clear();
                 if !text.is_empty() {
                     note.lyrics.push(Lyric {
@@ -670,6 +671,7 @@ pub enum EditCommand {
         measure: usize,
         voice: u8,
         event: usize,
+        note: usize,
         text: String,
         syllabic: Option<String>,
     },
@@ -773,6 +775,7 @@ impl EditCommand {
                 measure: get_usize(value, "measure", 0)?,
                 voice: get_u8(value, "voice", 1)?,
                 event: get_usize(value, "event", 0)?,
+                note: get_usize(value, "note", 0)?,
                 text: get_string(value, "text", "")?,
                 syllabic: value
                     .get("syllabic")

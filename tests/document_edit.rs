@@ -71,6 +71,7 @@ fn every_edit_command_mutates_the_document_soundly() {
             measure: 0,
             voice: 1,
             event: 0,
+            note: 0,
             text: "new".to_string(),
             syllabic: Some("begin".to_string()),
         })
@@ -85,6 +86,18 @@ fn every_edit_command_mutates_the_document_soundly() {
         })
         .unwrap();
     assert!(document.score.parts[0].measures[0].voice(1).unwrap().events[0].is_chord());
+    document
+        .apply(EditCommand::SetLyric {
+            part: 0,
+            measure: 0,
+            voice: 1,
+            event: 0,
+            note: 1,
+            text: "chord".to_string(),
+            syllabic: Some("single".to_string()),
+        })
+        .unwrap();
+
     document
         .apply(EditCommand::DeleteEvent {
             part: 0,
