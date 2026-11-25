@@ -223,10 +223,11 @@ impl Score {
 
     /// Transpose one part chromatically, spelling with the local key.
     pub fn transpose_part(&mut self, index: usize, semitones: i8) -> Result<()> {
-        let part = self
+        let mut part = self
             .parts
-            .get_mut(index)
-            .ok_or_else(|| Error::out_of_range(format!("part index {index}")))?;
+            .get(index)
+            .ok_or_else(|| Error::out_of_range(format!("part index {index}")))?
+            .clone();
         for measure in &mut part.measures {
             let prefer_flats = measure.attributes.key.prefer_flats();
             for voice in &mut measure.voices {
@@ -247,6 +248,7 @@ impl Score {
                 }
             }
         }
+        self.parts[index] = part;
         Ok(())
     }
 
