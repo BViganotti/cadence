@@ -26,6 +26,23 @@ cargo test --workspace
 cargo build --release
 ```
 
+## Studio
+
+The Studio is a single-page local workbench:
+
+- import MusicXML with a file picker (the document is replaced atomically);
+- switch between parts or preview the full score;
+- click any notehead/rest to select it, then change pitch, duration, dots,
+  dynamic, lyric, add a chord note or delete the event;
+- add measures and notes, set tempo and key, transpose a part;
+- see measure/note counts and live diagnostics;
+- download SVG, PDF, MIDI or MusicXML for the selected part or the full score;
+- receive live updates over SSE and undo the last 32 edits.
+
+The UI is embedded with `include_str!`; the server is loopback-only, token
+protected, CSP-restricted and never reads the filesystem at runtime. The
+[Studio API guide](docs/studio-api.md) lists every endpoint and edit command.
+
 ## What works
 
 - **Score model.** Pitches, durations, dots, voices, chords, rests, ties,
@@ -44,7 +61,23 @@ cargo build --release
   preview, diagnostics and export buttons in the browser.
 
 The supported MusicXML subset is listed in [docs/musicxml-subset.md](docs/musicxml-subset.md).
-Known gaps are tracked in [LIMITATIONS.md](LIMITATIONS.md).
+Known gaps are tracked in [LIMITATIONS.md](LIMITATIONS.md). The layout model is
+documented in [docs/engraving.md](docs/engraving.md).
+
+## Tests and benchmarks
+
+```sh
+cargo test --workspace
+cargo test --workspace --release
+cargo run --release -p cadence-fuzz        # 1,000 malformed cases
+cargo run --release -p cadence-bench       # honest wall-clock medians
+python3 tests/browser/studio_playwright.py # import/edit/preview/export
+```
+
+The fixture suite imports, exports twice and re-imports 100 checked-in
+MusicXML scores. The layout suite engraves 300 generated scores and requires
+zero overlapping ink symbols. The fuzz suite requires zero panics across 1,000
+hostile mutations. There is no CI workflow by design.
 
 ## Workspace
 
@@ -65,6 +98,16 @@ Known gaps are tracked in [LIMITATIONS.md](LIMITATIONS.md).
 3. Malformed input returns an error; it never panics or aborts.
 4. Layout and exports depend only on the score and engraving options.
 5. Generated exports contain no timestamps, random values or host paths.
+
+## Documentation
+
+- [Architecture](docs/architecture.md)
+- [MusicXML subset](docs/musicxml-subset.md)
+- [Engraving model](docs/engraving.md)
+- [Studio API](docs/studio-api.md)
+- [Testing](docs/testing.md)
+- [Security](SECURITY.md)
+- [Limitations](LIMITATIONS.md)
 
 ## License
 
