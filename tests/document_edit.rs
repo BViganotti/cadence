@@ -352,3 +352,41 @@ fn duplicate_measure_copies_events_and_renumbers() {
         .apply(EditCommand::DuplicateMeasure { part: 0, measure: 99 })
         .is_err());
 }
+
+#[test]
+fn metadata_fields_can_be_edited_and_validated() {
+    let mut document = Document::demo();
+    for (field, value) in [
+        ("title", "New title"),
+        ("subtitle", "A subtitle"),
+        ("composer", "Composer"),
+        ("lyricist", "Lyricist"),
+        ("arranger", "Arranger"),
+        ("copyright", "CC0"),
+        ("source", "test"),
+    ] {
+        document
+            .apply(EditCommand::SetMetadataText {
+                field: field.to_string(),
+                value: value.to_string(),
+            })
+            .unwrap();
+    }
+    assert_eq!(document.score.metadata.title, "New title");
+    assert_eq!(document.score.metadata.subtitle, "A subtitle");
+    assert_eq!(document.score.metadata.composer, "Composer");
+    assert_eq!(document.score.metadata.lyricist, "Lyricist");
+    assert_eq!(document.score.metadata.copyright, "CC0");
+    assert!(document
+        .apply(EditCommand::SetMetadataText {
+            field: "unknown".to_string(),
+            value: "x".to_string(),
+        })
+        .is_err());
+    assert!(document
+        .apply(EditCommand::SetMetadataText {
+            field: "title".to_string(),
+            value: "x".repeat(600),
+        })
+        .is_err());
+}

@@ -388,6 +388,26 @@ impl Document {
                 }
                 self.score.metadata.title = title.clone();
             }
+            EditCommand::SetMetadataText { field, value } => {
+                if value.chars().count() > 512 {
+                    return Err(Error::Limit("metadata text"));
+                }
+                match field.as_str() {
+                    "title" => self.score.metadata.title = value.clone(),
+                    "subtitle" => self.score.metadata.subtitle = value.clone(),
+                    "composer" => self.score.metadata.composer = value.clone(),
+                    "lyricist" => self.score.metadata.lyricist = value.clone(),
+                    "arranger" => self.score.metadata.arranger = value.clone(),
+                    "copyright" => self.score.metadata.copyright = value.clone(),
+                    "source" => self.score.metadata.source = value.clone(),
+                    other => {
+                        return Err(Error::msg(format!(
+                            "unknown metadata field {other:?}"
+                        )))
+                    }
+                }
+                self.score.metadata.validate()?;
+            }
             EditCommand::Transpose { part, semitones } => {
                 if *part >= self.score.parts.len() {
                     return Err(Error::out_of_range(format!("part {part}")));
@@ -765,6 +785,10 @@ pub enum EditCommand {
     SetTitle {
         title: String,
     },
+    SetMetadataText {
+        field: String,
+        value: String,
+    },
     Transpose {
         part: usize,
         semitones: i8,
@@ -881,6 +905,10 @@ impl EditCommand {
             }),
             "set_title" => Ok(EditCommand::SetTitle {
                 title: get_string(value, "title", "Untitled")?,
+            }),
+            "set_metadata" => Ok(EditCommand::SetMetadataText {
+                field: get_string(value, "field", "title")?,
+                value: get_string(value, "value", "")?,
             }),
             "transpose" => Ok(EditCommand::Transpose {
                 part,
