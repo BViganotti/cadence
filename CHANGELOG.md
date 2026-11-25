@@ -73,12 +73,22 @@ committed vertical slice in the repository; no dates are generated at runtime.
   connection caps.
 - Embedded original HTML/CSS/JS: part/full-score preview, note entry, inspector,
   diagnostics, import, undo and four download formats.
-- Playwright acceptance test covering import, edit, preview and export.
+- Bounded undo **and redo**, per-chord-note selection and lyric editing.
+- Keyboard shortcuts, zoom, page navigation, drag-and-drop import and a title /
+  subtitle / composer editor.
+- Add/delete parts, duplicate measures and duplicate events with validation.
+- Transpose one part or all parts atomically.
+- Playwright acceptance test covering import, edit, preview, keyboard entry,
+  undo/redo and export.
 
 ### Hardening
 
 - 1,000 deterministic malformed-input mutations with zero panics.
-- Honest dependency-free benchmark harness.
+- Honest dependency-free benchmark harness with measured medians in
+  `docs/performance.md`.
+- Golden FNV-1a hashes for SVG/PDF/MIDI/MusicXML demo output.
+- Repository invariant tests: path-only dependencies, no CI, no unsafe, required
+  docs, no external runtime assets.
 - Documentation for architecture, subset, engraving, API, testing, security and
   limitations.
 - Release report with LOC, commits, tests, coverage, benchmarks and gaps.
