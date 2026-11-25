@@ -34,10 +34,13 @@ The Studio is a single-page local workbench:
 - switch between parts or preview the full score;
 - click any notehead/rest to select it, then change pitch, duration, dots,
   dynamic, lyric, add a chord note or delete the event;
-- add measures and notes, set tempo and key, transpose a part;
-- see measure/note counts and live diagnostics;
+- add, duplicate or delete measures; add or delete parts;
+- set title, subtitle, composer, tempo and key; transpose one or all parts;
+- edit individual chord notes and their lyrics;
+- see note/chord/rest counts and live diagnostics;
+- zoom, page through the preview, and use keyboard shortcuts;
 - download SVG, PDF, MIDI or MusicXML for the selected part or the full score;
-- receive live updates over SSE and undo the last 32 edits.
+- receive live updates over SSE and undo/redo the last 32 edits.
 
 The UI is embedded with `include_str!`; the server is loopback-only, token
 protected, CSP-restricted and never reads the filesystem at runtime. The
@@ -106,6 +109,10 @@ hostile mutations. There is no CI workflow by design.
 - [Engraving model](docs/engraving.md)
 - [Studio API](docs/studio-api.md)
 - [Testing](docs/testing.md)
+- [Design decisions](docs/design-decisions.md)
+- [Performance](docs/performance.md)
+- [Accessibility](docs/accessibility.md)
+- [Release checklist](docs/release-checklist.md)
 - [Security](SECURITY.md)
 - [Limitations](LIMITATIONS.md)
 
