@@ -1013,6 +1013,16 @@ fn draw_measure(
                     ),
                 ));
                 geom.rest_y = rest_y;
+                page.hits.push(HitRegion {
+                    part: context.part,
+                    measure: context.measure_index,
+                    voice: voice.number,
+                    event: event_index,
+                    x: rest_x - 1.1 * s,
+                    y: context.staff_top,
+                    w: 2.6 * s,
+                    h: staff_height,
+                });
                 for dot in 0..event.duration.dots {
                     let dot_x = rest_x + 1.0 * s + dot as f64 * 0.55 * s;
                     page.elements
