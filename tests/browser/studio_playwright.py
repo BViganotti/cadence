@@ -126,10 +126,19 @@ def main() -> int:
             assert page.locator("#measureCount").inner_text() == "9"
             page.locator("#measures .chip").last.click()
             page.locator("#durations .chip", has_text="quarter").click()
-            page.locator("#pitchPad .pitch-key", has_text="C").click()
+            page.keyboard.press("c")
             page.wait_for_timeout(600)
             after_notes = int(page.locator("#scoreMeta").inner_text().split(" notes")[0].split("·")[-1].strip())
             assert after_notes == before_notes + 1, (before_notes, after_notes)
+            # Keyboard undo restores the previous score, then re-add the note.
+            page.keyboard.press("Meta+z")
+            page.wait_for_timeout(600)
+            undone_notes = int(page.locator("#scoreMeta").inner_text().split(" notes")[0].split("·")[-1].strip())
+            assert undone_notes == before_notes, (before_notes, undone_notes)
+            page.keyboard.press("c")
+            page.wait_for_timeout(600)
+            after_notes = int(page.locator("#scoreMeta").inner_text().split(" notes")[0].split("·")[-1].strip())
+            assert after_notes == before_notes + 1
 
             # Import MusicXML.
             fixture = ROOT / "examples/fixtures/fixture_050.musicxml"
