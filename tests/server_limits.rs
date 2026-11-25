@@ -111,6 +111,24 @@ fn invalid_tokens_are_not_initialized() {
 }
 
 #[test]
+fn invalid_query_values_return_json_bad_requests() {
+    let server = start();
+    for path in [
+        "/api/event?part=x&measure=0&voice=1&event=0",
+        "/api/event?part=0&measure=-1&voice=1&event=0",
+        "/api/event?part=0&measure=0&voice=999&event=0",
+        "/api/layout.svg?part=not-a-part",
+    ] {
+        let request = format!(
+            "GET {path} HTTP/1.1\r\nHost: x\r\nCookie: cadence_token=limits-token-123456\r\n\r\n"
+        );
+        let response = raw(&server, request.as_bytes());
+        assert!(response.starts_with("HTTP/1.1 400"), "{path}: {response}");
+        assert!(response.contains("application/json"));
+    }
+}
+
+#[test]
 fn server_survives_malformed_requests_and_still_serves_health() {
     let server = start();
     let _ = raw(&server, b"garbage\r\n\r\n");

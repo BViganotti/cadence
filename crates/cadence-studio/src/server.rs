@@ -335,6 +335,24 @@ fn handle_connection(stream: &mut TcpStream, shared: &Shared) -> std::io::Result
         return write_error(stream, 401, "missing or invalid access token", true);
     }
 
+    for (name, value) in &request.query {
+        let valid = match name.as_str() {
+            "part" => value == "all" || value.parse::<usize>().is_ok(),
+            "measure" | "event" => value.parse::<usize>().is_ok(),
+            "voice" => value.parse::<u8>().is_ok(),
+            "token" | "hits" => true,
+            _ => true,
+        };
+        if !valid {
+            return write_error(
+                stream,
+                400,
+                &format!("invalid query value for {name}"),
+                true,
+            );
+        }
+    }
+
     match (request.method.as_str(), request.path.as_str()) {
         ("GET", "/api/state") => {
             let document = shared.document.lock().map_err(lock_error)?;
