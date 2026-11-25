@@ -5,3 +5,5 @@
 
 pub mod musicxml;
 pub mod xml;
+
+pub use musicxml::{export_score, import_score};
