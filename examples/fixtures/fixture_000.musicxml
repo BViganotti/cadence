@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<score-partwise version="4.0">
+  <work>
+    <work-title>
+      Fixture 000
+    </work-title>
+  </work>
+  <movement-title>
+    4/4 in Cb minor
+  </movement-title>
+  <identification>
+    <creator type="composer">
+      Cadence fixtures
+    </creator>
+    <creator type="lyricist">
+      Cadence
+    </creator>
+    <rights>
+      MIT
+    </rights>
+    <source>
+      generated
+    </source>
+  </identification>
+  <part-list>
+    <score-part id="P1">
+      <part-name>
+        Melody
+      </part-name>
+      <midi-instrument id="P1-I1">
+        <midi-channel>
+          1
+        </midi-channel>
+        <midi-program>
+          1
+        </midi-program>
+      </midi-instrument>
+    </score-part>
+  </part-list>
+  <part id="P1">
+    <measure number="1">
+      <attributes>
+        <divisions>
+          480
+        </divisions>
+        <key>
+          <fifths>
+            -3
+          </fifths>
+          <mode>
+            minor
+          </mode>
+        </key>
+        <time>
+          <beats>
+            4
+          </beats>
+          <beat-type>
+            4
+          </beat-type>
+        </time>
+        <clef>
+          <sign>
+            G
+          </sign>
+          <line>
+            2
+          </line>
+        </clef>
+      </attributes>
+      <direction>
+        <direction-type>
+          <rehearsal>
+            F000
+          </rehearsal>
+        </direction-type>
+      </direction>
+      <direction>
+        <direction-type>
+          <metronome>
+            <beat-unit>
+              quarter
+            </beat-unit>
+            <per-minute>
+              80
+            </per-minute>
+          </metronome>
+        </direction-type>
+      </direction>
+      <direction>
+        <direction-type>
+          <dynamics>
+            <f/>
+          </dynamics>
+        </direction-type>
+      </direction>
+      <note>
+        <pitch>
+          <step>
+            C
+          </step>
+          <octave>
+            4
+          </octave>
+        </pitch>
+        <duration>
+          960
+        </duration>
+        <voice>
+          1
+        </voice>
+        <type>
+          half
+        </type>
+        <tie type="start"/>
+        <notations>
+          <tied type="start"/>
+          <slur type="start" number="1"/>
+          <articulations>
+            <staccato/>
+          </articulations>
+        </notations>
+        <lyric>
+          <syllabic>
+            begin
+          </syllabic>
+          <text>
+            la0
+          </text>
+        </lyric>
+      </note>
+      <note>
+        <pitch>
+          <step>
+            C
+          </step>
+          <octave>
+            4
+          </octave>
+        </pitch>
+        <duration>
+          960
+        </duration>
+        <voice>
+          1
+        </voice>
+        <type>
+          half
+        </type>
+        <tie type="stop"/>
+        <notations>
+          <tied type="stop"/>
+          <slur type="stop" number="1"/>
+        </notations>
+      </note>
+    </measure>
+    <measure number="2">
+      <direction>
+        <direction-type>
+          <dynamics>
+            <f/>
+          </dynamics>
+        </direction-type>
+      </direction>
+      <note>
+        <pitch>
+          <step>
+            D
+          </step>
+          <octave>
+            4
+          </octave>
+        </pitch>
+        <duration>
+          960
+        </duration>
+        <voice>
+          1
+        </voice>
+        <type>
+          half
+        </type>
+        <tie type="start"/>
+        <notations>
+          <tied type="start"/>
+          <slur type="start" number="1"/>
+          <articulations>
+            <staccato/>
+          </articulations>
+        </notations>
+      </note>
+      <note>
+        <pitch>
+          <step>
+            D
+          </step>
+          <octave>
+            4
+          </octave>
+        </pitch>
+        <duration>
+          960
+        </duration>
+        <voice>
+          1
+        </voice>
+        <type>
+          half
+        </type>
+        <tie type="stop"/>
+        <notations>
+          <tied type="stop"/>
+          <slur type="stop" number="1"/>
+        </notations>
+      </note>
+    </measure>
+    <measure number="3">
+      <direction>
+        <direction-type>
+          <dynamics>
+            <f/>
+          </dynamics>
+        </direction-type>
+      </direction>
+      <note>
+        <pitch>
+          <step>
+            E
+          </step>
+          <octave>
+            4
+          </octave>
+        </pitch>
+        <duration>
+          960
+        </duration>
+        <voice>
+          1
+        </voice>
+        <type>
+          half
+        </type>
+        <tie type="start"/>
+        <notations>
+          <tied type="start"/>
+          <slur type="start" number="1"/>
+          <articulations>
+            <staccato/>
+          </articulations>
+        </notations>
+      </note>
+      <note>
+        <pitch>
+          <step>
+            E
+          </step>
+          <octave>
+            4
+          </octave>
+        </pitch>
+        <duration>
+          960
+        </duration>
+        <voice>
+          1
+        </voice>
+        <type>
+          half
+        </type>
+        <tie type="stop"/>
+        <notations>
+          <tied type="stop"/>
+          <slur type="stop" number="1"/>
+        </notations>
+      </note>
+      <barline location="right">
+        <ending number="1" type="start"/>
+      </barline>
+    </measure>
+    <measure number="4">
+      <direction>
+        <direction-type>
+          <dynamics>
+            <f/>
+          </dynamics>
+        </direction-type>
+      </direction>
+      <note>
+        <pitch>
+          <step>
+            F
+          </step>
+          <octave>
+            4
+          </octave>
+        </pitch>
+        <duration>
+          960
+        </duration>
+        <voice>
+          1
+        </voice>
+        <type>
+          half
+        </type>
+        <tie type="start"/>
+        <notations>
+          <tied type="start"/>
+          <slur type="start" number="1"/>
+          <articulations>
+            <staccato/>
+          </articulations>
+        </notations>
+      </note>
+      <note>
+        <pitch>
+          <step>
+            F
+          </step>
+          <octave>
+            4
+          </octave>
+        </pitch>
+        <duration>
+          960
+        </duration>
+        <voice>
+          1
+        </voice>
+        <type>
+          half
+        </type>
+        <tie type="stop"/>
+        <notations>
+          <tied type="stop"/>
+          <slur type="stop" number="1"/>
+        </notations>
+      </note>
+      <barline location="right">
+        <bar-style>
+          light-heavy
+        </bar-style>
+        <repeat direction="backward" times="2"/>
+      </barline>
+    </measure>
+  </part>
+</score-partwise>

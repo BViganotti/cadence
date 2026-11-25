@@ -1,0 +1,11 @@
+[package]
+name = "cadence-fixtures"
+version = "0.1.0"
+edition = "2021"
+description = "Deterministic fixture generator for Cadence (development tool)"
+license = "MIT"
+publish = false
+
+[dependencies]
+cadence-core = { path = "../crates/cadence-core" }
+cadence-import = { path = "../crates/cadence-import" }

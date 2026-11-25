@@ -26,6 +26,7 @@ members = [
     "crates/cadence-studio",
     "fuzz",
     "bench",
+    "fixtures",
 ]
 default-members = [
     ".",
@@ -36,6 +37,7 @@ default-members = [
     "crates/cadence-studio",
     "fuzz",
     "bench",
+    "fixtures",
 ]
 
 [profile.release]
