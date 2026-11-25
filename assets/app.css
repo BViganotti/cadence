@@ -286,6 +286,10 @@ select:focus-visible,
   gap: 5px;
 }
 
+.button.spaced {
+  margin-top: 8px;
+}
+
 .part {
   display: flex;
   align-items: center;

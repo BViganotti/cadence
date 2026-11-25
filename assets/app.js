@@ -700,6 +700,15 @@
         semitones: Number($("#transposeSelect").value),
       });
     });
+    $("#addPart").addEventListener("click", () => {
+      const name = window.prompt("Part name", `Part ${(state.summary?.parts.length || 0) + 1}`);
+      if (name === null) return;
+      edit({ op: "add_part", name: name.trim() || "New part" });
+    });
+    $("#deletePart").addEventListener("click", () => {
+      if (!window.confirm("Delete the selected part and all of its measures?")) return;
+      edit({ op: "delete_part", part: state.selectedPart });
+    });
     $("#addMeasure").addEventListener("click", () => {
       edit({ op: "add_measure", part: state.selectedPart });
     });
