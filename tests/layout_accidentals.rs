@@ -47,10 +47,11 @@ fn key_signature_suppresses_expected_accidentals() {
 #[test]
 fn accidentals_reset_at_measure_boundaries() {
     let mut score = score_with(&["C#4"], 0);
-    score.parts[0].measures.push(cadence_core::Measure::new(
-        2,
-        score.parts[0].measures[0].attributes,
-    ));
+    let attributes = score.parts[0].measures[0].attributes;
+    score
+        .parts[0]
+        .measures
+        .push(cadence_core::Measure::new(2, attributes));
     score.parts[0].measures[1].push_note(
         1,
         Pitch::parse("C#4").unwrap(),
