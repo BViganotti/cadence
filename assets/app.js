@@ -690,6 +690,16 @@
         pitch: $("#inspPitch").value.trim(),
       });
     });
+    $("#duplicateEvent").addEventListener("click", () => {
+      if (!state.selection) return;
+      edit({
+        op: "duplicate_event",
+        part: state.selectedPart,
+        measure: state.selectedMeasure,
+        voice: state.selectedVoice,
+        event: state.selectedEvent,
+      });
+    });
     $("#deleteEvent").addEventListener("click", () => {
       if (!state.selection) return;
       edit({
