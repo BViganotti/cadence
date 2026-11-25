@@ -95,6 +95,18 @@ def main() -> int:
             assert page.locator("#scoreStage .hit").count() > 0
             assert page.url.endswith("/"), "access token should be removed from the URL"
 
+            # Zoom and page navigation controls.
+            page.locator("#zoomIn").click()
+            assert page.locator("#zoomLabel").inner_text() == "140%"
+            page.locator("#zoomOut").click()
+            assert page.locator("#zoomLabel").inner_text() == "100%"
+            pages = int(page.locator("#pageBadge").inner_text().split(" ")[0])
+            if pages > 1:
+                page.locator("#nextPage").click()
+                assert page.locator("#pageLabel").inner_text().startswith("2/")
+                page.locator("#prevPage").click()
+                assert page.locator("#pageLabel").inner_text().startswith("1/")
+
             # Full-score preview includes both staves.
             page.locator("#parts .part", has_text="Full score").click()
             page.wait_for_timeout(600)
