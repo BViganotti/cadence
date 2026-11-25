@@ -479,6 +479,19 @@ fn handle_connection(stream: &mut TcpStream, shared: &Shared) -> std::io::Result
                 Err(error) => write_error(stream, 400, &error.to_string(), true),
             }
         }
+        ("POST", "/api/redo") => {
+            let mut document = shared.document.lock().map_err(lock_error)?;
+            match document.redo() {
+                Ok(()) => {
+                    let summary = document.summary();
+                    let version = document.version;
+                    drop(document);
+                    notify(shared, version);
+                    write_json(stream, 200, &summary)
+                }
+                Err(error) => write_error(stream, 400, &error.to_string(), true),
+            }
+        }
         ("POST", "/api/reset") => {
             let mut document = shared.document.lock().map_err(lock_error)?;
             *document = Document::demo();

@@ -174,6 +174,11 @@ fn state_edit_undo_reset_and_select_flow() {
         Some(&cookie),
     );
     assert_eq!(invalid.status, 400);
+    let redo = request(&server, "POST", "/api/redo", "{}", Some(&cookie));
+    assert_eq!(redo.status, 200);
+    assert!(redo.text().contains("Server Test"));
+    let redo_again = request(&server, "POST", "/api/redo", "{}", Some(&cookie));
+    assert_eq!(redo_again.status, 400);
     let reset = request(&server, "POST", "/api/reset", "{}", Some(&cookie));
     assert_eq!(reset.status, 200);
     assert!(reset.text().contains("Cadence in G"));
