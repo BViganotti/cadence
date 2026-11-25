@@ -1168,6 +1168,7 @@ mod tests {
                 measure: 0,
                 voice: 1,
                 event: 0,
+                note: 0,
                 text: "la".to_string(),
                 syllabic: Some("single".to_string()),
             })
