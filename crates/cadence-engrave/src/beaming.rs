@@ -67,7 +67,7 @@ pub fn beam_groups(measure: &Measure, voice_number: u8) -> Vec<BeamGroup> {
             continue;
         }
         let mut end = index;
-        let mut boundary = boundary_for(starts[index], &boundaries);
+        let boundary = boundary_for(starts[index], &boundaries);
         while end + 1 < events.len()
             && !used[end + 1]
             && is_beamable(&events[end + 1])
@@ -83,12 +83,6 @@ pub fn beam_groups(measure: &Measure, voice_number: u8) -> Vec<BeamGroup> {
                 start_event: index,
                 end_event: end,
             });
-        } else {
-            // A single continuous run may still span a beat boundary; start a
-            // new attempt at the next event.
-            let _ = boundary;
-            boundary = boundary_for(starts[index + 1], &boundaries);
-            let _ = boundary;
         }
         index = end + 1;
     }
