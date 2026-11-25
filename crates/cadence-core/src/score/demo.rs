@@ -217,12 +217,9 @@ pub fn demo_score() -> Score {
         add_rest(&mut bass, measure, 2, Duration::whole());
     }
 
-    // Mid-score key change on the last two bars, then resolved attributes are
+    // Mid-score key change on the last two bars. Attributes are resolved and
     // copied forward for every following measure.
     key = Key::new(-1, KeyMode::Major);
-    let mut attributes = melody_attributes;
-    attributes.key = key;
-    melody_attributes = attributes;
     for measure in &mut melody.measures[6..] {
         measure.attributes.key = key;
         measure.explicit_attributes = true;
