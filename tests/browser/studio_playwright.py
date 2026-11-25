@@ -135,10 +135,10 @@ def main() -> int:
             page.wait_for_timeout(600)
             undone_notes = int(page.locator("#scoreMeta").inner_text().split(" notes")[0].split("·")[-1].strip())
             assert undone_notes == before_notes, (before_notes, undone_notes)
-            page.keyboard.press("c")
+            page.keyboard.press("Meta+Shift+z")
             page.wait_for_timeout(600)
-            after_notes = int(page.locator("#scoreMeta").inner_text().split(" notes")[0].split("·")[-1].strip())
-            assert after_notes == before_notes + 1
+            redone_notes = int(page.locator("#scoreMeta").inner_text().split(" notes")[0].split("·")[-1].strip())
+            assert redone_notes == before_notes + 1, (before_notes, redone_notes)
 
             # Import MusicXML.
             fixture = ROOT / "examples/fixtures/fixture_050.musicxml"
