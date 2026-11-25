@@ -347,6 +347,12 @@
     if (document.activeElement !== $("#titleInput")) {
       $("#titleInput").value = summary.metadata.title || "";
     }
+    if (document.activeElement !== $("#subtitleInput")) {
+      $("#subtitleInput").value = summary.metadata.subtitle || "";
+    }
+    if (document.activeElement !== $("#composerInput")) {
+      $("#composerInput").value = summary.metadata.composer || "";
+    }
     const meta = [];
     if (summary.metadata.subtitle) meta.push(summary.metadata.subtitle);
     if (summary.metadata.composer) meta.push(summary.metadata.composer);
@@ -676,6 +682,33 @@
     $("#zoomIn").addEventListener("click", () => applyZoom(1));
     $("#applyTitle").addEventListener("click", () => {
       edit({ op: "set_title", title: $("#titleInput").value.trim() || "Untitled" });
+    });
+    $("#applyMetadata").addEventListener("click", async () => {
+      if (state.busy) return;
+      state.busy = true;
+      try {
+        await api("/api/edit", {
+          method: "POST",
+          body: JSON.stringify({
+            op: "set_metadata",
+            field: "subtitle",
+            value: $("#subtitleInput").value.trim(),
+          }),
+        });
+        await api("/api/edit", {
+          method: "POST",
+          body: JSON.stringify({
+            op: "set_metadata",
+            field: "composer",
+            value: $("#composerInput").value.trim(),
+          }),
+        });
+        await refresh();
+      } catch (error) {
+        fail(error.message);
+      } finally {
+        state.busy = false;
+      }
     });
     $("#applyTempo").addEventListener("click", () => {
       edit({
