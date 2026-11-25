@@ -24,7 +24,7 @@ fn systems_never_exceed_content_width_when_measures_fit() {
         let width: f64 = system
             .measures
             .iter()
-            .map(|index| 120.0)
+            .map(|_index| 120.0)
             .sum::<f64>()
             + if system.measures.is_empty() { 0.0 } else { 50.0 };
         assert!(width <= 480.0 + 0.01, "{system:?} -> {width}");

@@ -72,7 +72,7 @@ reported separately rather than hidden inside the product count.
 
 ## Commits
 
-- **95 commits** at hand-off (this report is the final commit).
+- **96 commits** at hand-off (this report is part of the final commit).
 - Every commit builds and passes the workspace tests.
 - History is a sequence of vertical slices: core model, MusicXML, engraving,
   export, Studio, hardening, tests and documentation.
