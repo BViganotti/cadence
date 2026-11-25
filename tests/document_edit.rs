@@ -256,3 +256,34 @@ fn edit_commands_parse_from_json_with_defaults() {
     let bad = json::parse(r#"{"op":"add_note","measure":-1}"#).unwrap();
     assert!(EditCommand::from_json(&bad).is_err());
 }
+
+#[test]
+fn redo_restores_undone_edits_and_is_cleared_by_new_edits() {
+    let mut document = Document::demo();
+    document
+        .apply(EditCommand::SetTitle {
+            title: "First".to_string(),
+        })
+        .unwrap();
+    document
+        .apply(EditCommand::SetTitle {
+            title: "Second".to_string(),
+        })
+        .unwrap();
+    document.undo().unwrap();
+    assert_eq!(document.score.metadata.title, "First");
+    assert!(document.can_redo());
+    document.redo().unwrap();
+    assert_eq!(document.score.metadata.title, "Second");
+    assert!(!document.can_redo());
+    assert!(document.redo().is_err());
+    document.undo().unwrap();
+    document
+        .apply(EditCommand::SetTitle {
+            title: "Third".to_string(),
+        })
+        .unwrap();
+    assert!(!document.can_redo());
+    assert_eq!(document.score.metadata.title, "Third");
+    assert!(document.summary().stringify().contains("\"canRedo\""));
+}

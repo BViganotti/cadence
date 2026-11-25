@@ -19,6 +19,7 @@ pub struct Document {
     pub selected_part: usize,
     pub source: String,
     undo: Vec<Score>,
+    redo: Vec<Score>,
 }
 
 impl Default for Document {
@@ -35,6 +36,7 @@ impl Document {
             selected_part: 0,
             source: "Built-in demo".to_string(),
             undo: Vec::new(),
+            redo: Vec::new(),
         }
     }
 
@@ -45,6 +47,7 @@ impl Document {
             selected_part: 0,
             source: source.into(),
             undo: Vec::new(),
+            redo: Vec::new(),
         }
     }
 
@@ -65,6 +68,10 @@ impl Document {
         let Some(previous) = self.undo.pop() else {
             return Err(Error::msg("nothing to undo"));
         };
+        self.redo.push(self.score.clone());
+        if self.redo.len() > UNDO_LIMIT {
+            self.redo.remove(0);
+        }
         self.score = previous;
         self.selected_part = self.selected_part.min(self.score.parts.len().saturating_sub(1));
         self.version += 1;
@@ -73,6 +80,24 @@ impl Document {
 
     pub fn can_undo(&self) -> bool {
         !self.undo.is_empty()
+    }
+
+    pub fn can_redo(&self) -> bool {
+        !self.redo.is_empty()
+    }
+
+    pub fn redo(&mut self) -> Result<()> {
+        let Some(next) = self.redo.pop() else {
+            return Err(Error::msg("nothing to redo"));
+        };
+        self.undo.push(self.score.clone());
+        if self.undo.len() > UNDO_LIMIT {
+            self.undo.remove(0);
+        }
+        self.score = next;
+        self.selected_part = self.selected_part.min(self.score.parts.len().saturating_sub(1));
+        self.version += 1;
+        Ok(())
     }
 
     pub fn select_part(&mut self, index: usize) -> Result<()> {
@@ -155,6 +180,7 @@ impl Document {
         if self.undo.len() > UNDO_LIMIT {
             self.undo.remove(0);
         }
+        self.redo.clear();
         self.version += 1;
         self.selected_part = self.selected_part.min(self.score.parts.len().saturating_sub(1));
         Ok(())
@@ -430,6 +456,7 @@ impl Document {
         if self.undo.len() > UNDO_LIMIT {
             self.undo.remove(0);
         }
+        self.redo.clear();
     }
 
 
@@ -558,6 +585,7 @@ impl Document {
             ("source", json::string(self.source.clone())),
             ("selectedPart", json::count(self.selected_part)),
             ("canUndo", json::bool(self.can_undo())),
+            ("canRedo", json::bool(self.can_redo())),
             (
                 "metadata",
                 json::object(vec![
