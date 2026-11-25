@@ -4,7 +4,7 @@
 
 CARGO ?= cargo
 
-.PHONY: all build test test-release fmt-check check bench fuzz fixtures studio clean
+.PHONY: all build test test-release check bench fuzz fixtures browser-test coverage studio clean
 
 all: build test
 
@@ -26,6 +26,12 @@ bench:
 
 fuzz:
 	$(CARGO) run --release -p cadence-fuzz
+
+browser-test: build
+	CADENCE_BIN=target/release/cadence python3 tests/browser/studio_playwright.py
+
+coverage:
+	$(CARGO) llvm-cov --workspace --summary-only
 
 fixtures:
 	$(CARGO) run --release -p cadence-fixtures
