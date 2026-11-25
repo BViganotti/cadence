@@ -59,26 +59,28 @@ pub struct SlurResolution {
 /// practice and avoids cross-voice ambiguity.
 pub fn resolve_slurs(part: &Part) -> SlurResolution {
     let mut result = SlurResolution::default();
+    let mut open: std::collections::BTreeMap<u8, Vec<(u8, NotePos)>> =
+        std::collections::BTreeMap::new();
     for (measure_index, measure) in part.measures.iter().enumerate() {
         for voice in &measure.voices {
-            let mut open: Vec<(u8, NotePos)> = Vec::new();
             for (event_index, event) in voice.events.iter().enumerate() {
                 if let EventKind::Pitched(notes) = &event.kind {
                     for (note_index, note) in notes.iter().enumerate() {
                         let pos = NotePos::new(measure_index, voice.number, event_index, note_index);
                         for slur in &note.slurs {
+                            let stack = open.entry(voice.number).or_default();
                             match slur.kind {
                                 SlurKind::Start => {
-                                    if open.len() < 16 {
-                                        open.push((slur.number, pos));
+                                    if stack.len() < 16 {
+                                        stack.push((slur.number, pos));
                                     }
                                 }
                                 SlurKind::Stop => {
-                                    if let Some(index) = open
+                                    if let Some(index) = stack
                                         .iter()
                                         .rposition(|(number, _)| *number == slur.number)
                                     {
-                                        let (number, start) = open.remove(index);
+                                        let (number, start) = stack.remove(index);
                                         result.spans.push(SlurSpan {
                                             number,
                                             start,
@@ -98,13 +100,15 @@ pub fn resolve_slurs(part: &Part) -> SlurResolution {
                     }
                 }
             }
-            for (number, at) in open {
-                result.problems.push(SpanProblem {
-                    number,
-                    at,
-                    kind: SpanProblemKind::StartWithoutStop,
-                });
-            }
+        }
+    }
+    for stack in open.into_values() {
+        for (number, at) in stack {
+            result.problems.push(SpanProblem {
+                number,
+                at,
+                kind: SpanProblemKind::StartWithoutStop,
+            });
         }
     }
     result.spans.sort_by_key(|span| (span.start, span.end));
@@ -127,18 +131,20 @@ pub struct TieResolution {
 /// Pair tie start/stop flags by pitch inside a voice.
 pub fn resolve_ties(part: &Part) -> TieResolution {
     let mut result = TieResolution::default();
+    let mut open: std::collections::BTreeMap<u8, Vec<(Pitch, NotePos)>> =
+        std::collections::BTreeMap::new();
     for (measure_index, measure) in part.measures.iter().enumerate() {
         for voice in &measure.voices {
-            let mut open: Vec<(Pitch, NotePos)> = Vec::new();
             for (event_index, event) in voice.events.iter().enumerate() {
                 if let EventKind::Pitched(notes) = &event.kind {
                     for (note_index, note) in notes.iter().enumerate() {
                         let pos = NotePos::new(measure_index, voice.number, event_index, note_index);
+                        let stack = open.entry(voice.number).or_default();
                         if note.tie.stop {
                             if let Some(index) =
-                                open.iter().position(|(pitch, _)| *pitch == note.pitch)
+                                stack.iter().position(|(pitch, _)| *pitch == note.pitch)
                             {
-                                let (pitch, start) = open.remove(index);
+                                let (pitch, start) = stack.remove(index);
                                 result.spans.push(TieSpan {
                                     pitch,
                                     start,
@@ -153,19 +159,20 @@ pub fn resolve_ties(part: &Part) -> TieResolution {
                             }
                         }
                         if note.tie.start {
-                            open.push((note.pitch, pos));
+                            stack.push((note.pitch, pos));
                         }
                     }
                 }
             }
-            for (pitch, at) in open {
-                let _ = pitch;
-                result.problems.push(SpanProblem {
-                    number: 0,
-                    at,
-                    kind: SpanProblemKind::StartWithoutStop,
-                });
-            }
+        }
+    }
+    for stack in open.into_values() {
+        for (_pitch, at) in stack {
+            result.problems.push(SpanProblem {
+                number: 0,
+                at,
+                kind: SpanProblemKind::StartWithoutStop,
+            });
         }
     }
     result.spans.sort_by_key(|span| (span.start, span.end));

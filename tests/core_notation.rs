@@ -35,9 +35,14 @@ fn nested_slurs_pair_by_number_and_position() {
     let resolution = resolve_slurs(&part);
     assert_eq!(resolution.spans.len(), 2);
     assert!(resolution.problems.is_empty());
-    assert_eq!(resolution.spans[0].number, 1);
-    assert_eq!(resolution.spans[0].start.measure, 0);
-    assert_eq!(resolution.spans[0].end.measure, 1);
+    let outer = resolution
+        .spans
+        .iter()
+        .find(|span| span.number == 1)
+        .unwrap();
+    assert_eq!(outer.start.measure, 0);
+    assert_eq!(outer.end.measure, 1);
+    assert_eq!(outer.end.event, 1);
 }
 
 #[test]
