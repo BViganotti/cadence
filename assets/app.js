@@ -742,6 +742,12 @@
       if (!window.confirm("Delete the selected part and all of its measures?")) return;
       edit({ op: "delete_part", part: state.selectedPart });
     });
+    $("#applyTransposeAll").addEventListener("click", () => {
+      edit({
+        op: "transpose_all",
+        semitones: Number($("#transposeSelect").value),
+      });
+    });
     $("#addMeasure").addEventListener("click", () => {
       edit({ op: "add_measure", part: state.selectedPart });
     });
