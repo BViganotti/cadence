@@ -20,12 +20,12 @@ Measured medians of 20 iterations after one warmup:
 
 | Stage | Median | Output |
 | --- | ---: | ---: |
-| MusicXML import | 3.040 ms | 520 notes |
-| Engrave layout | 0.521 ms | 15 pages, 60 systems, 939 symbols |
-| Render SVG | 7.824 ms | 904,935 bytes |
-| Render PDF | 10.491 ms | 404,463 bytes |
-| Render MIDI | 0.045 ms | 4,726 bytes |
-| Full pipeline (sum) | 21.920 ms | — |
+| MusicXML import | 2.956 ms | 520 notes |
+| Engrave layout | 0.546 ms | 15 pages, 60 systems, 939 symbols |
+| Render SVG | 7.745 ms | 904,935 bytes |
+| Render PDF | 10.455 ms | 404,463 bytes |
+| Render MIDI | 0.044 ms | 4,726 bytes |
+| Full pipeline (sum) | 21.746 ms | — |
 
 SVG is the largest output because every text run is emitted as vector
 rectangles and every glyph is a path. PDF is smaller because it emits filled
