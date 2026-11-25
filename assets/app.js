@@ -329,6 +329,9 @@
     const summary = state.summary;
     if (!summary) return;
     $("#scoreTitle").textContent = summary.metadata.title || "Untitled";
+    if (document.activeElement !== $("#titleInput")) {
+      $("#titleInput").value = summary.metadata.title || "";
+    }
     const meta = [];
     if (summary.metadata.subtitle) meta.push(summary.metadata.subtitle);
     if (summary.metadata.composer) meta.push(summary.metadata.composer);
@@ -651,6 +654,9 @@
       });
       state.selectedEvent = null;
       state.selection = null;
+    });
+    $("#applyTitle").addEventListener("click", () => {
+      edit({ op: "set_title", title: $("#titleInput").value.trim() || "Untitled" });
     });
     $("#applyTempo").addEventListener("click", () => {
       edit({
