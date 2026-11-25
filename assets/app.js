@@ -21,6 +21,7 @@
     octave: 4,
     pitch: "C",
     previewAll: false,
+    zoom: 1,
     busy: false,
     ready: false,
     refreshTimer: 0,
@@ -70,6 +71,20 @@
 
   const stage = $("#scoreStage");
   const toast = $("#toast");
+  const ZOOM_LEVELS = [
+    { value: 0.7, label: "70%", attribute: "small" },
+    { value: 1, label: "100%", attribute: "normal" },
+    { value: 1.4, label: "140%", attribute: "large" },
+    { value: 2, label: "200%", attribute: "xlarge" },
+  ];
+
+  function applyZoom(delta) {
+    const index = ZOOM_LEVELS.findIndex((level) => level.value === state.zoom);
+    const next = clamp((index < 0 ? 1 : index) + delta, 0, ZOOM_LEVELS.length - 1);
+    state.zoom = ZOOM_LEVELS[next].value;
+    stage.dataset.zoom = ZOOM_LEVELS[next].attribute === "normal" ? "" : ZOOM_LEVELS[next].attribute;
+    $("#zoomLabel").textContent = ZOOM_LEVELS[next].label;
+  }
 
   function clamp(value, min, max) {
     return Math.max(min, Math.min(max, value));
@@ -655,6 +670,8 @@
       state.selectedEvent = null;
       state.selection = null;
     });
+    $("#zoomOut").addEventListener("click", () => applyZoom(-1));
+    $("#zoomIn").addEventListener("click", () => applyZoom(1));
     $("#applyTitle").addEventListener("click", () => {
       edit({ op: "set_title", title: $("#titleInput").value.trim() || "Untitled" });
     });

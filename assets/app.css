@@ -485,6 +485,37 @@ select:focus-visible,
   box-shadow: inset 0 0 0 2px rgba(227, 180, 95, 0.35), var(--shadow);
 }
 
+.zoom-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 6px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+}
+
+.button.small {
+  padding: 3px 8px;
+  font-size: 13px;
+  background: transparent;
+  border-color: transparent;
+}
+
+.stage[data-zoom="small"] svg {
+  width: 70%;
+}
+
+.stage[data-zoom="large"] svg {
+  width: 140%;
+  max-width: none;
+}
+
+.stage[data-zoom="xlarge"] svg {
+  width: 200%;
+  max-width: none;
+}
+
 .stage svg {
   display: block;
   width: min(100%, 920px);
