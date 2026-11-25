@@ -460,11 +460,22 @@
     info.textContent = selection.isRest
       ? `Rest · ${selection.duration}${selection.dots ? " dotted" : ""} · measure ${selection.measureNumber}`
       : `${notes} · ${selection.duration}${selection.dots ? " dotted" : ""} · measure ${selection.measureNumber}`;
-    $("#inspPitch").value = selection.notes.length ? selection.notes[0].pitch : "";
+    const noteSelect = $("#inspNote");
+    noteSelect.innerHTML = "";
+    selection.notes.forEach((note, index) => {
+      const option = document.createElement("option");
+      option.value = String(index);
+      option.textContent = `#${index + 1} · ${note.pitch}`;
+      noteSelect.append(option);
+    });
+    state.selectedNote = clamp(state.selectedNote, 0, Math.max(0, selection.notes.length - 1));
+    noteSelect.value = String(state.selectedNote);
+    const activeNote = selection.notes[state.selectedNote] || null;
+    $("#inspPitch").value = activeNote ? activeNote.pitch : "";
     $("#inspDuration").value = selection.duration;
     $("#inspDots").value = String(selection.dots);
     $("#inspDynamic").value = selection.dynamic || "";
-    $("#inspLyric").value = selection.notes.length ? selection.notes[0].lyric || "" : "";
+    $("#inspLyric").value = activeNote ? activeNote.lyric || "" : "";
     $("#keySelect").value = String(selection.fifths ?? 0);
     if (selection.tempo) $("#tempoInput").value = String(selection.tempo);
     $("#addChord").disabled = selection.isRest;
@@ -561,6 +572,15 @@
         dots: Number($("#dots").value),
       });
     });
+    $("#inspNote").addEventListener("change", (event) => {
+      state.selectedNote = Number(event.target.value);
+      if (!state.selection) return;
+      const note = state.selection.notes[state.selectedNote];
+      if (note) {
+        $("#inspPitch").value = note.pitch;
+        $("#inspLyric").value = note.lyric || "";
+      }
+    });
     $("#applyPitch").addEventListener("click", () => {
       if (!state.selection) return;
       edit({
@@ -569,7 +589,7 @@
         measure: state.selectedMeasure,
         voice: state.selectedVoice,
         event: state.selectedEvent,
-        note: 0,
+        note: state.selectedNote,
         pitch: $("#inspPitch").value.trim(),
       });
     });
