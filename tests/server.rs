@@ -279,3 +279,24 @@ fn sse_receives_an_update_after_an_edit() {
     }
     panic!("SSE stream closed before update");
 }
+
+#[test]
+fn export_filenames_are_sanitized_and_bounded() {
+    let server = start();
+    let cookie = token(&server);
+    let edit = request(
+        &server,
+        "POST",
+        "/api/edit",
+        r#"{"op":"set_title","title":"../../A/B: C? -- Test"}"#,
+        Some(&cookie),
+    );
+    assert_eq!(edit.status, 200);
+    let pdf = request(&server, "GET", "/api/export/pdf", "", Some(&cookie));
+    let disposition = pdf.header("content-disposition").unwrap();
+    assert!(disposition.contains("filename=\""));
+    assert!(!disposition.contains(".."));
+    assert!(!disposition.contains('/'));
+    let musicxml = request(&server, "GET", "/api/export/musicxml", "", Some(&cookie));
+    assert!(musicxml.header("content-disposition").unwrap().ends_with(".musicxml\""));
+}
