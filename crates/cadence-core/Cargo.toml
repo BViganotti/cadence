@@ -1,0 +1,9 @@
+[package]
+name = "cadence-core"
+version = "0.1.0"
+edition = "2021"
+description = "Score and notation model for Cadence"
+license = "MIT"
+publish = false
+
+[dependencies]

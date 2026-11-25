@@ -1,0 +1,17 @@
+[package]
+name = "cadence-bench"
+version = "0.1.0"
+edition = "2021"
+description = "Dependency-free benchmark harness for Cadence (development tool)"
+license = "MIT"
+publish = false
+
+[dependencies]
+cadence-core = { path = "../crates/cadence-core" }
+cadence-import = { path = "../crates/cadence-import" }
+cadence-engrave = { path = "../crates/cadence-engrave" }
+cadence-export = { path = "../crates/cadence-export" }
+
+[[bin]]
+name = "cadence-bench"
+path = "src/main.rs"

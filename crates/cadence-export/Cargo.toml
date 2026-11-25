@@ -1,0 +1,11 @@
+[package]
+name = "cadence-export"
+version = "0.1.0"
+edition = "2021"
+description = "SVG, PDF and MIDI export for Cadence"
+license = "MIT"
+publish = false
+
+[dependencies]
+cadence-core = { path = "../cadence-core" }
+cadence-engrave = { path = "../cadence-engrave" }

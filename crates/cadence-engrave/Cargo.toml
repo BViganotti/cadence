@@ -1,0 +1,10 @@
+[package]
+name = "cadence-engrave"
+version = "0.1.0"
+edition = "2021"
+description = "Deterministic music engraving for Cadence"
+license = "MIT"
+publish = false
+
+[dependencies]
+cadence-core = { path = "../cadence-core" }

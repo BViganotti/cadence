@@ -1,0 +1,13 @@
+[package]
+name = "cadence-studio"
+version = "0.1.0"
+edition = "2021"
+description = "Local browser studio for Cadence"
+license = "MIT"
+publish = false
+
+[dependencies]
+cadence-core = { path = "../cadence-core" }
+cadence-import = { path = "../cadence-import" }
+cadence-engrave = { path = "../cadence-engrave" }
+cadence-export = { path = "../cadence-export" }

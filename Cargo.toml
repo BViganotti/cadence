@@ -1,0 +1,44 @@
+[package]
+name = "cadence"
+version = "0.1.0"
+edition = "2021"
+description = "Local browser music notation and engraving workbench"
+license = "MIT"
+publish = false
+
+[[bin]]
+name = "cadence"
+path = "src/main.rs"
+
+[dependencies]
+cadence-core = { path = "crates/cadence-core" }
+cadence-import = { path = "crates/cadence-import" }
+cadence-engrave = { path = "crates/cadence-engrave" }
+cadence-export = { path = "crates/cadence-export" }
+cadence-studio = { path = "crates/cadence-studio" }
+
+[workspace]
+members = [
+    "crates/cadence-core",
+    "crates/cadence-import",
+    "crates/cadence-engrave",
+    "crates/cadence-export",
+    "crates/cadence-studio",
+    "fuzz",
+    "bench",
+]
+default-members = [
+    ".",
+    "crates/cadence-core",
+    "crates/cadence-import",
+    "crates/cadence-engrave",
+    "crates/cadence-export",
+    "crates/cadence-studio",
+    "fuzz",
+    "bench",
+]
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1

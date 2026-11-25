@@ -1,0 +1,10 @@
+[package]
+name = "cadence-import"
+version = "0.1.0"
+edition = "2021"
+description = "MusicXML import and export for Cadence"
+license = "MIT"
+publish = false
+
+[dependencies]
+cadence-core = { path = "../cadence-core" }
