@@ -712,6 +712,13 @@
     $("#addMeasure").addEventListener("click", () => {
       edit({ op: "add_measure", part: state.selectedPart });
     });
+    $("#duplicateMeasure").addEventListener("click", () => {
+      edit({
+        op: "duplicate_measure",
+        part: state.selectedPart,
+        measure: state.selectedMeasure,
+      });
+    });
     $("#deleteMeasure").addEventListener("click", () => {
       edit({
         op: "delete_measure",
