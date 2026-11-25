@@ -268,6 +268,30 @@ impl Document {
                     return Err(Error::out_of_range("event index"));
                 }
             }
+            EditCommand::DuplicateEvent {
+                part,
+                measure,
+                voice,
+                event,
+            } => {
+                let measure = self.measure_mut(*part, *measure)?;
+                let divisions = measure.attributes.divisions;
+                let capacity = measure.capacity_ticks();
+                let voice_ref = measure
+                    .voice(*voice)
+                    .ok_or_else(|| Error::out_of_range("voice"))?;
+                let source = voice_ref
+                    .events
+                    .get(*event)
+                    .ok_or_else(|| Error::out_of_range("event index"))?
+                    .clone();
+                let fill = voice_ref.duration_ticks(divisions);
+                let ticks = source.duration.ticks(divisions);
+                if fill + ticks > capacity {
+                    return Err(Error::msg("duplicating the event would overfill the measure"));
+                }
+                measure.voice_mut(*voice).events.insert(event + 1, source);
+            }
             EditCommand::SetPitch {
                 part,
                 measure,
@@ -752,6 +776,12 @@ pub enum EditCommand {
         voice: u8,
         event: usize,
     },
+    DuplicateEvent {
+        part: usize,
+        measure: usize,
+        voice: u8,
+        event: usize,
+    },
     SetPitch {
         part: usize,
         measure: usize,
@@ -865,6 +895,12 @@ impl EditCommand {
                 pitch: get_string(value, "pitch", "E4")?,
             }),
             "delete_event" => Ok(EditCommand::DeleteEvent {
+                part,
+                measure: get_usize(value, "measure", 0)?,
+                voice: get_u8(value, "voice", 1)?,
+                event: get_usize(value, "event", 0)?,
+            }),
+            "duplicate_event" => Ok(EditCommand::DuplicateEvent {
                 part,
                 measure: get_usize(value, "measure", 0)?,
                 voice: get_u8(value, "voice", 1)?,

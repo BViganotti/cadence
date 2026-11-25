@@ -408,3 +408,41 @@ fn transpose_all_is_atomic_across_parts() {
         .is_err());
     assert_eq!(document.score, after);
 }
+
+#[test]
+fn duplicate_event_inserts_after_the_source_and_respects_capacity() {
+    let mut document = Document::demo();
+    // Melody measure 2 is underfull after deleting one event, making room for
+    // a duplicate.
+    document
+        .apply(EditCommand::DeleteEvent {
+            part: 0,
+            measure: 1,
+            voice: 1,
+            event: 3,
+        })
+        .unwrap();
+    let before = document.score.parts[0].measures[1].voice(1).unwrap().events.len();
+    document
+        .apply(EditCommand::DuplicateEvent {
+            part: 0,
+            measure: 1,
+            voice: 1,
+            event: 0,
+        })
+        .unwrap();
+    assert_eq!(
+        document.score.parts[0].measures[1].voice(1).unwrap().events.len(),
+        before + 1
+    );
+    let full_before = document.score.parts[0].measures[0].clone();
+    assert!(document
+        .apply(EditCommand::DuplicateEvent {
+            part: 0,
+            measure: 0,
+            voice: 1,
+            event: 0,
+        })
+        .is_err());
+    assert_eq!(document.score.parts[0].measures[0], full_before);
+}
