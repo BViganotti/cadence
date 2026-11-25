@@ -129,6 +129,15 @@ fn invalid_query_values_return_json_bad_requests() {
 }
 
 #[test]
+fn unsupported_methods_return_method_not_allowed() {
+    let server = start();
+    let request = b"DELETE /api/state HTTP/1.1\r\nHost: x\r\nCookie: cadence_token=limits-token-123456\r\nContent-Length: 0\r\n\r\n";
+    let response = raw(&server, request);
+    assert!(response.starts_with("HTTP/1.1 405"), "{response}");
+    assert!(response.contains("method not allowed"));
+}
+
+#[test]
 fn server_survives_malformed_requests_and_still_serves_health() {
     let server = start();
     let _ = raw(&server, b"garbage\r\n\r\n");

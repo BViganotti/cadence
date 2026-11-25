@@ -334,6 +334,9 @@ fn handle_connection(stream: &mut TcpStream, shared: &Shared) -> std::io::Result
     if !request.authorized(&shared.token) {
         return write_error(stream, 401, "missing or invalid access token", true);
     }
+    if request.method != "GET" && request.method != "POST" {
+        return write_error(stream, 405, "method not allowed", true);
+    }
 
     for (name, value) in &request.query {
         let valid = match name.as_str() {
@@ -909,6 +912,7 @@ fn status_text(status: u16) -> &'static str {
         401 => "Unauthorized",
         403 => "Forbidden",
         404 => "Not Found",
+        405 => "Method Not Allowed",
         413 => "Payload Too Large",
         500 => "Internal Server Error",
         503 => "Service Unavailable",
