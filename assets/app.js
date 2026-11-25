@@ -22,6 +22,8 @@
     pitch: "C",
     previewAll: false,
     zoom: 1,
+    page: 0,
+    pageCount: 1,
     busy: false,
     ready: false,
     refreshTimer: 0,
@@ -400,7 +402,10 @@
     const svg = await response.text();
     stage.innerHTML = svg;
     stage.setAttribute("aria-busy", "false");
-    $("#pageBadge").textContent = `${(svg.match(/<g id="page-/g) || []).length} page(s)`;
+    state.pageCount = Math.max(1, (svg.match(/<g id="page-/g) || []).length);
+    state.page = clamp(state.page, 0, state.pageCount - 1);
+    $("#pageBadge").textContent = `${state.pageCount} page(s)`;
+    updatePageLabel();
     stage.querySelectorAll(".hit").forEach((hit) => {
       hit.addEventListener("click", (event) => {
         event.stopPropagation();
@@ -413,6 +418,25 @@
       });
     });
     highlightSelection();
+  }
+
+  function updatePageLabel() {
+    $("#pageLabel").textContent = `${state.page + 1}/${state.pageCount}`;
+    $("#prevPage").disabled = state.page <= 0;
+    $("#nextPage").disabled = state.page >= state.pageCount - 1;
+  }
+
+  function gotoPage(delta) {
+    state.page = clamp(state.page + delta, 0, state.pageCount - 1);
+    updatePageLabel();
+    const group = stage.querySelector(`#page-${state.page + 1}`);
+    if (!group) return;
+    const stageRect = stage.getBoundingClientRect();
+    const groupRect = group.getBoundingClientRect();
+    stage.scrollTo({
+      top: stage.scrollTop + groupRect.top - stageRect.top - 16,
+      behavior: "smooth",
+    });
   }
 
   function highlightSelection() {
@@ -678,6 +702,8 @@
       state.selectedEvent = null;
       state.selection = null;
     });
+    $("#prevPage").addEventListener("click", () => gotoPage(-1));
+    $("#nextPage").addEventListener("click", () => gotoPage(1));
     $("#zoomOut").addEventListener("click", () => applyZoom(-1));
     $("#zoomIn").addEventListener("click", () => applyZoom(1));
     $("#applyTitle").addEventListener("click", () => {
