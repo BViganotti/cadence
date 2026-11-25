@@ -438,6 +438,51 @@ impl Document {
             EditCommand::SelectPart { part } => {
                 self.select_part(*part)?;
             }
+            EditCommand::AddPart { name } => {
+                if self.score.parts.len() >= Score::MAX_PARTS {
+                    return Err(Error::Limit("parts per score"));
+                }
+                if name.chars().count() > 256 {
+                    return Err(Error::Limit("part name"));
+                }
+                let id = {
+                    let mut suffix = self.score.parts.len() + 1;
+                    loop {
+                        let candidate = format!("P{suffix}");
+                        if self.score.part_index_by_id(&candidate).is_none() {
+                            break candidate;
+                        }
+                        suffix += 1;
+                    }
+                };
+                let measure_count = self.score.measure_count().max(1);
+                let attributes = self
+                    .score
+                    .parts
+                    .first()
+                    .and_then(|part| part.measures.first())
+                    .map(|measure| measure.attributes)
+                    .unwrap_or_default();
+                let mut part = cadence_core::Part::new(id, name.clone());
+                part.midi_channel = (self.score.parts.len() % 16) as u8;
+                for number in 1..=measure_count {
+                    part.measures.push(cadence_core::Measure::new(number, attributes));
+                }
+                self.score.parts.push(part);
+                self.selected_part = self.score.parts.len() - 1;
+            }
+            EditCommand::DeletePart { part } => {
+                if self.score.parts.len() <= 1 {
+                    return Err(Error::msg("cannot delete the last part"));
+                }
+                if *part >= self.score.parts.len() {
+                    return Err(Error::out_of_range(format!("part {part}")));
+                }
+                self.score.parts.remove(*part);
+                self.selected_part = self
+                    .selected_part
+                    .min(self.score.parts.len().saturating_sub(1));
+            }
         }
         Ok(())
     }
@@ -720,6 +765,12 @@ pub enum EditCommand {
     SelectPart {
         part: usize,
     },
+    AddPart {
+        name: String,
+    },
+    DeletePart {
+        part: usize,
+    },
 }
 
 impl EditCommand {
@@ -823,6 +874,10 @@ impl EditCommand {
                 fifths: get_i8(value, "fifths", 0)?,
             }),
             "select_part" => Ok(EditCommand::SelectPart { part }),
+            "add_part" => Ok(EditCommand::AddPart {
+                name: get_string(value, "name", "New part")?,
+            }),
+            "delete_part" => Ok(EditCommand::DeletePart { part }),
             other => Err(Error::msg(format!("unknown edit op {other:?}"))),
         }
     }

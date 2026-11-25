@@ -309,3 +309,30 @@ fn summary_reports_chord_and_rest_counts() {
     assert!(summary.get("restCount").and_then(|v| v.as_u64()).unwrap() >= 1);
     assert!(summary.get("eventCount").and_then(|v| v.as_u64()).unwrap() >= summary.get("noteCount").and_then(|v| v.as_u64()).unwrap());
 }
+
+#[test]
+fn parts_can_be_added_and_deleted_without_losing_the_document() {
+    let mut document = Document::demo();
+    let initial_measures = document.score.measure_count();
+    document
+        .apply(EditCommand::AddPart {
+            name: "Clarinet".to_string(),
+        })
+        .unwrap();
+    assert_eq!(document.score.parts.len(), 3);
+    assert_eq!(document.score.parts[2].name, "Clarinet");
+    assert_eq!(document.score.parts[2].measures.len(), initial_measures);
+    assert_eq!(document.selected_part, 2);
+    document
+        .apply(EditCommand::DeletePart { part: 2 })
+        .unwrap();
+    assert_eq!(document.score.parts.len(), 2);
+    assert_eq!(document.selected_part, 1);
+    document
+        .apply(EditCommand::DeletePart { part: 1 })
+        .unwrap();
+    assert!(document
+        .apply(EditCommand::DeletePart { part: 0 })
+        .is_err());
+    assert_eq!(document.score.parts.len(), 1);
+}
