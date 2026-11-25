@@ -414,6 +414,13 @@ impl Document {
                 }
                 self.score.transpose_part(*part, *semitones)?;
             }
+            EditCommand::TransposeAll { semitones } => {
+                let mut next = self.score.clone();
+                for part in 0..next.parts.len() {
+                    next.transpose_part(part, *semitones)?;
+                }
+                self.score = next;
+            }
             EditCommand::AddMeasure { part } => {
                 let part = self
                     .score
@@ -793,6 +800,9 @@ pub enum EditCommand {
         part: usize,
         semitones: i8,
     },
+    TransposeAll {
+        semitones: i8,
+    },
     AddMeasure {
         part: usize,
     },
@@ -912,6 +922,9 @@ impl EditCommand {
             }),
             "transpose" => Ok(EditCommand::Transpose {
                 part,
+                semitones: get_i8(value, "semitones", 0)?,
+            }),
+            "transpose_all" => Ok(EditCommand::TransposeAll {
                 semitones: get_i8(value, "semitones", 0)?,
             }),
             "add_measure" => Ok(EditCommand::AddMeasure { part }),

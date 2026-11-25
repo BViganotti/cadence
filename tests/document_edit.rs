@@ -390,3 +390,21 @@ fn metadata_fields_can_be_edited_and_validated() {
         })
         .is_err());
 }
+
+#[test]
+fn transpose_all_is_atomic_across_parts() {
+    let mut document = Document::demo();
+    let before = document.score.clone();
+    document
+        .apply(EditCommand::TransposeAll { semitones: 7 })
+        .unwrap();
+    assert_ne!(document.score, before);
+    assert_eq!(document.score.parts.len(), before.parts.len());
+    // A large transposition fails for at least one part and leaves the whole
+    // score untouched.
+    let after = document.score.clone();
+    assert!(document
+        .apply(EditCommand::TransposeAll { semitones: 120 })
+        .is_err());
+    assert_eq!(document.score, after);
+}
