@@ -707,6 +707,51 @@
     }, 90);
   }
 
+  function installShortcuts() {
+    document.addEventListener("keydown", (event) => {
+      const target = event.target;
+      if (target && target.closest && target.closest("input, select, textarea")) return;
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "z") {
+        event.preventDefault();
+        $("#undoBtn").click();
+        return;
+      }
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
+      if (/^[1-7]$/.test(event.key)) {
+        const index = Number(event.key) - 1;
+        const chip = $$("#durations .chip")[index];
+        if (chip) {
+          chip.click();
+          event.preventDefault();
+        }
+        return;
+      }
+      if (event.key.length === 1 && PITCHES.includes(event.key.toUpperCase())) {
+        addNote(`${event.key.toUpperCase()}${state.octave}`);
+        event.preventDefault();
+        return;
+      }
+      if (event.key === "Delete" || event.key === "Backspace") {
+        if (state.selection) {
+          $("#deleteEvent").click();
+          event.preventDefault();
+        }
+        return;
+      }
+      if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+        const delta = event.key === "ArrowLeft" ? -1 : 1;
+        const part = selectedPartInfo();
+        if (!part) return;
+        state.selectedMeasure = clamp(state.selectedMeasure + delta, 0, part.measures - 1);
+        state.selectedEvent = null;
+        state.selection = null;
+        renderMeasures();
+        updateSelectionUI();
+        event.preventDefault();
+      }
+    });
+  }
+
   function connectEvents() {
     try {
       const source = new EventSource("/api/events");
@@ -721,6 +766,7 @@
 
   renderOptions();
   bind();
+  installShortcuts();
   stage.innerHTML = `<div class="empty-state"><span class="spinner" aria-hidden="true"></span><p>Engraving…</p></div>`;
   refresh().then(connectEvents);
   setConnection("connecting");
