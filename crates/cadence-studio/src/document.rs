@@ -427,6 +427,25 @@ impl Document {
                     measure.number = index + 1;
                 }
             }
+            EditCommand::DuplicateMeasure { part, measure } => {
+                let part = self
+                    .score
+                    .parts
+                    .get_mut(*part)
+                    .ok_or_else(|| Error::out_of_range(format!("part {part}")))?;
+                if part.measures.len() >= 10_000 {
+                    return Err(Error::Limit("measures per part"));
+                }
+                let source = part
+                    .measures
+                    .get(*measure)
+                    .ok_or_else(|| Error::out_of_range("measure index"))?
+                    .clone();
+                part.measures.insert(measure + 1, source);
+                for (index, measure) in part.measures.iter_mut().enumerate() {
+                    measure.number = index + 1;
+                }
+            }
             EditCommand::SetKey { part, measure, fifths } => {
                 if !(-7..=7).contains(fifths) {
                     return Err(Error::out_of_range(format!("key fifths {fifths}")));
@@ -757,6 +776,10 @@ pub enum EditCommand {
         part: usize,
         measure: usize,
     },
+    DuplicateMeasure {
+        part: usize,
+        measure: usize,
+    },
     SetKey {
         part: usize,
         measure: usize,
@@ -865,6 +888,10 @@ impl EditCommand {
             }),
             "add_measure" => Ok(EditCommand::AddMeasure { part }),
             "delete_measure" => Ok(EditCommand::DeleteMeasure {
+                part,
+                measure: get_usize(value, "measure", 0)?,
+            }),
+            "duplicate_measure" => Ok(EditCommand::DuplicateMeasure {
                 part,
                 measure: get_usize(value, "measure", 0)?,
             }),

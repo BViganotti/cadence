@@ -336,3 +336,19 @@ fn parts_can_be_added_and_deleted_without_losing_the_document() {
         .is_err());
     assert_eq!(document.score.parts.len(), 1);
 }
+
+#[test]
+fn duplicate_measure_copies_events_and_renumbers() {
+    let mut document = Document::demo();
+    let notes_before = document.score.note_count();
+    document
+        .apply(EditCommand::DuplicateMeasure { part: 0, measure: 0 })
+        .unwrap();
+    assert_eq!(document.score.parts[0].measures.len(), 9);
+    assert_eq!(document.score.note_count(), notes_before + 4);
+    assert_eq!(document.score.parts[0].measures[1].number, 2);
+    assert_eq!(document.score.parts[0].measures[8].number, 9);
+    assert!(document
+        .apply(EditCommand::DuplicateMeasure { part: 0, measure: 99 })
+        .is_err());
+}
