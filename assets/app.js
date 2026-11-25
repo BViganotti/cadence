@@ -340,6 +340,7 @@
       `v${summary.version} · ${summary.parts.length} part(s) · ${summary.noteCount} notes · ` +
       `${summary.diagnostics.errors} error(s), ${summary.diagnostics.warnings} warning(s)`;
     $("#undoBtn").disabled = !summary.canUndo;
+    $("#redoBtn").disabled = !summary.canRedo;
     renderParts();
     renderMeasures();
     renderDiagnostics();
@@ -516,6 +517,16 @@
     $("#undoBtn").addEventListener("click", async () => {
       try {
         await api("/api/undo", { method: "POST", body: "{}" });
+        state.selectedEvent = null;
+        state.selection = null;
+        await refresh();
+      } catch (error) {
+        fail(error.message);
+      }
+    });
+    $("#redoBtn").addEventListener("click", async () => {
+      try {
+        await api("/api/redo", { method: "POST", body: "{}" });
         state.selectedEvent = null;
         state.selection = null;
         await refresh();
@@ -733,7 +744,16 @@
       if (target && target.closest && target.closest("input, select, textarea")) return;
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "z") {
         event.preventDefault();
-        $("#undoBtn").click();
+        if (event.shiftKey) {
+          $("#redoBtn").click();
+        } else {
+          $("#undoBtn").click();
+        }
+        return;
+      }
+      if (event.ctrlKey && event.key.toLowerCase() === "y") {
+        event.preventDefault();
+        $("#redoBtn").click();
         return;
       }
       if (event.metaKey || event.ctrlKey || event.altKey) return;
