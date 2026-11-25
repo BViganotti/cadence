@@ -508,19 +508,7 @@
       const file = event.target.files && event.target.files[0];
       if (!file) return;
       try {
-        const text = await file.text();
-        await api("/api/import", {
-          method: "POST",
-          body: text,
-          contentType: "application/xml",
-        });
-        state.selectedMeasure = 0;
-        state.selectedEvent = null;
-        state.selection = null;
-        showToast(`Imported ${file.name}`, "ok");
-        await refresh();
-      } catch (error) {
-        fail(error.message);
+        await importFile(file);
       } finally {
         event.target.value = "";
       }
@@ -671,6 +659,38 @@
     $$("[data-export]").forEach((button) => {
       button.addEventListener("click", () => download(button.dataset.export));
     });
+    stage.addEventListener("dragover", (event) => {
+      if (event.dataTransfer && Array.from(event.dataTransfer.types).includes("Files")) {
+        event.preventDefault();
+        stage.classList.add("dragover");
+      }
+    });
+    stage.addEventListener("dragleave", () => stage.classList.remove("dragover"));
+    stage.addEventListener("drop", async (event) => {
+      event.preventDefault();
+      stage.classList.remove("dragover");
+      const file = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0];
+      if (!file) return;
+      await importFile(file);
+    });
+  }
+
+  async function importFile(file) {
+    try {
+      const text = await file.text();
+      await api("/api/import", {
+        method: "POST",
+        body: text,
+        contentType: "application/xml",
+      });
+      state.selectedMeasure = 0;
+      state.selectedEvent = null;
+      state.selection = null;
+      showToast(`Imported ${file.name}`, "ok");
+      await refresh();
+    } catch (error) {
+      fail(error.message);
+    }
   }
 
   async function download(kind) {
