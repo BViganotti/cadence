@@ -287,6 +287,9 @@ impl<'a> JsonParser<'a> {
         if self.pos == digits_start {
             return Err(Error::msg("invalid JSON number"));
         }
+        if self.pos - digits_start > 1 && self.bytes[digits_start] == b'0' {
+            return Err(Error::msg("JSON numbers may not have leading zeros"));
+        }
         if self.bytes.get(self.pos) == Some(&b'.') {
             self.pos += 1;
             let fraction_start = self.pos;
